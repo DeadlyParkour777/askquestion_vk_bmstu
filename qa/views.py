@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from .utils import paginate
 import random
 
 # Create your views here.
@@ -16,13 +17,15 @@ QUESTIONS = [
 ]
 
 def index(request):
-    context = {'questions': QUESTIONS}
-    return render(request, 'index.html', context)
+    page_obj = paginate(QUESTIONS, request, per_page=5)
+    context = {'questions': page_obj}
+    return render(request, 'qa/index.html', context)
 
 def hot_questions(request):
     best_questions = sorted(QUESTIONS, key=lambda q: q['rating'], reverse=True)
-    context = {'questions': best_questions}
-    return render(request, 'index.html', context)    
+    page_obj = paginate(best_questions, request, per_page=5)
+    context = {'questions': page_obj}
+    return render(request, 'qa/index.html', context)    
 
 def question_info(request, question_id):
     q = None
@@ -46,7 +49,7 @@ def question_info(request, question_id):
         'answers': answer,
     }
 
-    return render(request, 'question.html', context)
+    return render(request, 'qa/question.html', context)
 
 def question_by_tag(request, tag_name):
     tagged_questions = []
@@ -59,13 +62,13 @@ def question_by_tag(request, tag_name):
         'tag_name': tag_name,
     }
 
-    return render(request, 'tag.html', context)
+    return render(request, 'qa/tag.html', context)
 
 def login_view(request):
-    return render(request, 'login.html')
+    return render(request, 'qa/login.html')
 
 def signup_view(request):
-    return render(request, 'signup.html')
+    return render(request, 'qa/signup.html')
 
 def ask_question(request):
-    return render(request, 'ask.html')
+    return render(request, 'qa/ask.html')
