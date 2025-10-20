@@ -47,3 +47,16 @@ def question_info(request, question_id):
     }
 
     return render(request, 'question.html', context)
+
+def question_by_tag(request, tag_name):
+    tagged_questions = []
+    for q in QUESTIONS:
+        if tag_name in q['tags']:
+            tagged_questions.append(q)
+
+    context = {
+        'questions': tagged_questions,
+        'tag_name': tag_name,
+    }
+
+    return render(request, 'tag.html', context)

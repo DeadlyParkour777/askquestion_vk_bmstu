@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Вопросы по тегу: {{ tag_name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Вопросы по тегу: "{{ tag_name }}"</h1>
+    <a href="/ask/" class="btn btn-primary">Задать вопрос</a>
+</div>
+
+{% for question in questions %}
+<div class="card mb-3">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-2 text-center">
+                <img src="https://via.placeholder.com/80" alt="avatar" class="rounded-circle mb-2">
+                <div class="d-flex justify-content-center align-items-center">
+                    <button class="btn btn-sm btn-outline-success me-2">-</button>
+                    <span class="fs-5">{{ question.rating }}</span>
+                    <button class="btn btn-sm btn-outline-danger ms-2">+</button>
+                </div>
+            </div>
+            <div class="col-10">
+                <h5 class="card-title"><a href="/question/{{ question.id }}/">{{ question.title }}</a></h5>
+                <p class="card-text">{{ question.text }}</p>
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <a href="/question/{{ question.id }}/" class="me-2">Ответы ({{ question.answers_count }})</a>
+                        <span>Теги:</span>
+                        {% for tag in question.tags %}
+                        <a href="/tag/{{ tag }}/" class="badge bg-secondary text-decoration-none">{{ tag }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<nav aria-label="Page navigation">
+    <ul class="pagination">
+        <li class="page-item disabled"><a class="page-link" href="#">Предыдущая</a></li>
+        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+        <li class="page-item"><a class="page-link" href="#">Следующая</a></li>
+    </ul>
+</nav>
+{% endblock %}
