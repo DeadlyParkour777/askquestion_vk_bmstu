@@ -1,64 +1,41 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
+from .models import Question, Answer, Tag
 from .utils import paginate
-import random
+from django.db.models import Count
 
 # Create your views here.
 
-QUESTIONS = [
-    {
-        'id': i,
-        'title': f'Вопрос номер {i + 1}',
-        'text': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi.',
-        'rating': random.randint(-10, 100),
-        'answers_count': random.randint(0, 20),
-        'tags': ['python', 'django', 'bootstrap']
-    } for i in range(30)
-]
-
 def index(request):
-    page_obj = paginate(QUESTIONS, request, per_page=5)
+    questions = Question.objects.all().order_by('-created_at')
+    page_obj = paginate(questions, request, per_page=10)
     context = {'questions': page_obj}
     return render(request, 'qa/index.html', context)
 
 def hot_questions(request):
-    best_questions = sorted(QUESTIONS, key=lambda q: q['rating'], reverse=True)
-    page_obj = paginate(best_questions, request, per_page=5)
+    questions = Question.objects.annotate(num_answers=Count('answer')).order_by('-num_answers')
+    page_obj = paginate(questions, request, per_page=10)
     context = {'questions': page_obj}
     return render(request, 'qa/index.html', context)    
 
 def question_info(request, question_id):
-    q = None
-    for question in QUESTIONS:
-        if question['id'] == question_id:
-            q = question
-            break
-    
-    if q == None:
-        return HttpResponse('Question not found')
-
-    answer = [
-        {
-            'text': f'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-            'rating': random.randint(-10, 50),
-        } for _ in range(q['answers_count'])
-    ]
+    question = get_object_or_404(Question, pk=question_id)
+    answers = question.answer_set.order_by('-created_at')
 
     context = {
-        'question': q,
-        'answers': answer,
+        'question': question,
+        'answers': answers,
     }
 
     return render(request, 'qa/question.html', context)
 
 def question_by_tag(request, tag_name):
-    tagged_questions = []
-    for q in QUESTIONS:
-        if tag_name in q['tags']:
-            tagged_questions.append(q)
+    tag = get_object_or_404(Tag, name=tag_name)
+    questions = tag.question_set.all().order_by('-created_at')
+    page_obj = paginate(questions, request, per_page=10)
 
     context = {
-        'questions': tagged_questions,
+        'questions': page_obj,
         'tag_name': tag_name,
     }
 

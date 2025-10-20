@@ -19,7 +19,7 @@
                 <p class="card-text">{{ question.text }}</p>
                 <div>
                     <span>Теги:</span>
-                    {% for tag in question.tags %}
+                    {% for tag in question.tags.all %}
                     <a href="#" class="badge bg-secondary text-decoration-none">{{ tag }}</a>
                     {% endfor %}
                 </div>

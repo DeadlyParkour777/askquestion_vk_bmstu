@@ -27,7 +27,7 @@
                     <div>
                         <a href="/question/{{ question.id }}/" class="me-2">Ответы ({{ question.answers_count }})</a>
                         <span>Теги:</span>
-                        {% for tag in question.tags %}
+                        {% for tag in question.tags.all %}
                         <a href="/tag/{{ tag }}/" class="badge bg-secondary text-decoration-none">{{ tag }}</a>
                         {% endfor %}
                     </div>
