@@ -6,8 +6,8 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h1>Новые вопросы</h1>
     <div>
-        <a href="/hot/" class="me-2">Лучшие вопросы</a>
-        <a href="/ask/" class="btn btn-primary">Задать вопрос</a>
+        <a href="{% url 'hot' %}" class="me-2">Лучшие вопросы</a>
+        <a href="{% url 'ask' %}" class="btn btn-primary">Задать вопрос</a>
     </div>
 </div>
 
@@ -24,14 +24,14 @@
                 </div>
             </div>
             <div class="col-10">
-                <h5 class="card-title"><a href="/question/{{ question.id }}/">{{ question.title }}</a></h5>
+                <h5 class="card-title"><a href="{% url 'question' question.id %}">{{ question.title }}</a></h5>
                 <p class="card-text">{{ question.text }}</p>
                 <div class="d-flex justify-content-between">
                     <div>
-                        <a href="/question/{{ question.id }}/" class="me-2">Ответы ({{ question.answers_count }})</a>
+                        <a href="{% url 'question' question.id %}" class="me-2">Ответы ({{ question.answers_count }})</a>
                         <span>Теги:</span>
                         {% for tag in question.tags %}
-                        <a href="/tag/{{ tag }}/" class="badge bg-secondary text-decoration-none">{{ tag }}</a>
+                        <a href="{% url 'tag' tag %}" class="badge bg-secondary text-decoration-none">{{ tag }}</a>
                         {% endfor %}
                     </div>
                 </div>

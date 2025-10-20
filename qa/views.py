@@ -60,3 +60,12 @@ def question_by_tag(request, tag_name):
     }
 
     return render(request, 'tag.html', context)
+
+def login_view(request):
+    return render(request, 'login.html')
+
+def signup_view(request):
+    return render(request, 'signup.html')
+
+def ask_question(request):
+    return render(request, 'ask.html')

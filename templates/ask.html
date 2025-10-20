@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}Новый вопрос{% endblock %}
+{% block content %}
+    <h1>Новый вопрос</h1>
+    <form>
+        <div class="mb-3">
+            <label for="title" class="form-label">Заголовок</label>
+            <input type="text" class="form-control" id="title">
+        </div>
+        <div class="mb-3">
+            <label for="text" class="form-label">Текст вопроса</label>
+            <textarea class="form-control" id="text" rows="8"></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="tags" class="form-label">Теги</label>
+            <input type="text" class="form-control" id="tags" placeholder="python, django, mysql">
+        </div>
+        <button type="submit" class="btn btn-primary">Опубликовать</button>
+    </form>
+{% endblock %}

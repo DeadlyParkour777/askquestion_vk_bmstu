@@ -7,4 +7,7 @@ urlpatterns = [
     path('question/<int:question_id>/', views.question_info, name='question'),
     path('tag/<str:tag_name>/', views.question_by_tag, name='tag'),
 
+    path('login/', views.login_view, name='login'),
+    path('signup/', views.signup_view, name='signup'),
+    path('ask/', views.ask_question, name='ask')
 ]

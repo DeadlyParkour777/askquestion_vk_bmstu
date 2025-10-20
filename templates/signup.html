@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Регистрация{% endblock %}
+{% block content %}
+    <h1>Регистрация</h1>
+    <form class="row g-3">
+        <div class="col-md-6">
+            <label for="login" class="form-label">Логин</label>
+            <input type="text" class="form-control" id="login">
+        </div>
+        <div class="col-md-6">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email">
+        </div>
+        <div class="col-md-6">
+            <label for="password" class="form-label">Пароль</label>
+            <input type="password" class="form-control" id="password">
+        </div>
+        <div class="col-md-6">
+            <label for="password_repeat" class="form-label">Повторите пароль</label>
+            <input type="password" class="form-control" id="password_repeat">
+        </div>
+        <div class="col-12">
+            <label for="avatar" class="form-label">Аватар</label>
+            <input class="form-control" type="file" id="avatar">
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+        </div>
+    </form>
+{% endblock %}
