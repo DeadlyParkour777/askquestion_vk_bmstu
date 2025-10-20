@@ -1,0 +1,52 @@
+{% load static %}
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Ask Pupkin{% endblock %}</title>
+    
+    <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    
+</head>
+<body>
+
+{% include 'nav.html' %}
+
+<main class="container">
+    <div class="row">
+        <div class="col-md-9">
+            {% block content %}
+            {% endblock %}
+        </div>
+
+        <div class="col-md-3">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Популярные теги</h5>
+                    <p>
+                        <a href="#" class="badge bg-primary text-decoration-none">Python</a>
+                        <a href="#" class="badge bg-success text-decoration-none">Django</a>
+                        <a href="#" class="badge bg-danger text-decoration-none">MySQL</a>
+                        <a href="#" class="badge bg-warning text-dark text-decoration-none">Bootstrap</a>
+                        <a href="#" class="badge bg-info text-dark text-decoration-none">Nginx</a>
+                    </p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Лучшие пользователи</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">User-1</a></li>
+                        <li><a href="#">User-2</a></li>
+                        <li><a href="#">User-3</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>
