@@ -8,7 +8,7 @@ import random
 QUESTIONS = [
     {
         'id': i,
-        'title': f'Вопрос номер {i}',
+        'title': f'Вопрос номер {i + 1}',
         'text': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi.',
         'rating': random.randint(-10, 100),
         'answers_count': random.randint(0, 20),
