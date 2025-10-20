@@ -36,9 +36,9 @@ def question_info(request, question_id):
 
     answer = [
         {
-            'text': f'Ответ на вопрос №{i}. Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+            'text': f'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
             'rating': random.randint(-10, 50),
-        } for i in range(5)
+        } for _ in range(q['answers_count'])
     ]
 
     context = {
