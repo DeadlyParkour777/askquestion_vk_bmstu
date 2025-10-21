@@ -1,9 +1,10 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from .models import Question, Answer, Tag
 from .utils import paginate
-from .forms import SignupForm, LoginForm
+from .forms import SignupForm, LoginForm, AskForm
 from django.db.models import Count
 
 # Create your views here.
@@ -70,5 +71,13 @@ def logout_view(request):
     logout(request)
     return redirect('index')
 
-def ask_question(request):
-    return render(request, 'qa/ask.html')
+@login_required
+def ask_view(request):
+    if request.method == 'POST':
+        form = AskForm(request.POST)
+        if form.is_valid():
+            question = form.save(author=request.user.profile)
+            return redirect('question', question_id=question.id)
+    else:
+        form = AskForm()
+    return render(request, 'qa/ask.html', {'form': form})
