@@ -16,7 +16,7 @@ def index(request):
     return render(request, 'qa/index.html', context)
 
 def hot_questions(request):
-    questions = Question.objects.annotate(num_answers=Count('answer')).order_by('-num_answers')
+    questions = Question.objects.annotate(answers_count=Count('answer')).order_by('-answers_count')
     page_obj = paginate(questions, request, per_page=10)
     context = {'questions': page_obj}
     return render(request, 'qa/index.html', context)    
