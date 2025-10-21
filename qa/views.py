@@ -1,7 +1,9 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth import login, authenticate, logout
 from django.http import HttpResponse
 from .models import Question, Answer, Tag
 from .utils import paginate
+from .forms import SignupForm, LoginForm
 from django.db.models import Count
 
 # Create your views here.
@@ -42,10 +44,31 @@ def question_by_tag(request, tag_name):
     return render(request, 'qa/tag.html', context)
 
 def login_view(request):
-    return render(request, 'qa/login.html')
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            login(request, form.get_user())
+            return redirect('index')
+    else:
+        form = LoginForm()
+
+    return render(request, 'qa/login.html', {'form': form})
 
 def signup_view(request):
-    return render(request, 'qa/signup.html')
+    if request.method == 'POST':
+        form = SignupForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('index')
+    else:
+        form = SignupForm()
+
+    return render(request, 'qa/signup.html', {'form': form})
+
+def logout_view(request):
+    logout(request)
+    return redirect('index')
 
 def ask_question(request):
     return render(request, 'qa/ask.html')
