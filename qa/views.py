@@ -7,7 +7,7 @@ from django.db.models import Count
 # Create your views here.
 
 def index(request):
-    questions = Question.objects.all().order_by('-created_at')
+    questions = Question.objects.all().annotate(answers_count=Count('answer')).order_by('-created_at')
     page_obj = paginate(questions, request, per_page=10)
     context = {'questions': page_obj}
     return render(request, 'qa/index.html', context)
@@ -31,7 +31,7 @@ def question_info(request, question_id):
 
 def question_by_tag(request, tag_name):
     tag = get_object_or_404(Tag, name=tag_name)
-    questions = tag.question_set.all().order_by('-created_at')
+    questions = tag.question_set.all().annotate(answers_count=Count('answer')).order_by('-created_at')
     page_obj = paginate(questions, request, per_page=10)
 
     context = {
