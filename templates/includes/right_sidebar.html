@@ -1,0 +1,25 @@
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">Популярные теги</h5>
+        <div class="d-flex flex-wrap">
+            {% for tag in popular_tags %}
+                <a href="{% url 'tag' tag.name %}" class="badge bg-primary text-decoration-none me-1 mb-1">{{ tag.name }}</a>
+            {% empty %}
+                <span class="text-muted small">Тегов пока нет</span>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Лучшие пользователи</h5>
+        <ul class="list-unstyled mb-0">
+            {% for u in best_users %}
+                <li><a href="#" class="text-decoration-none">{{ u.username }}</a></li>
+            {% empty %}
+                <li class="text-muted small">Пользователей пока нет</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>

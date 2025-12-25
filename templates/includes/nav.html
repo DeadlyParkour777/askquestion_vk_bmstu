@@ -2,10 +2,61 @@
     <div class="container">
         <a class="navbar-brand" href="{% url 'index' %}">Ask Pupkin</a>
         <div class="collapse navbar-collapse">
-            <form class="d-flex w-75 mx-auto" role="search">
-                <input class="form-control me-2" type="search" placeholder="Найти вопрос..." aria-label="Search">
-                <button class="btn btn-outline-light" type="submit">Найти</button>
+            <form class="d-flex w-75 mx-auto position-relative" role="search" onsubmit="return false;">
+                <input class="form-control me-2" type="search" id="search-input" 
+                       placeholder="Найти вопрос..." aria-label="Search" autocomplete="off">
+                <div id="search-results" class="list-group position-absolute w-100" 
+                     style="top: 100%; z-index: 1000; display: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                </div>
             </form>
+
+            <script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    const searchInput = document.getElementById('search-input');
+                    const resultsBox = document.getElementById('search-results');
+                    let timeout = null;
+
+                    searchInput.addEventListener('input', function() {
+                        clearTimeout(timeout);
+                        const query = this.value.trim();
+
+                        if (query.length < 3) {
+                            resultsBox.style.display = 'none';
+                            return;
+                        }
+
+                        timeout = setTimeout(() => {
+                            fetch(`/search/?q=${encodeURIComponent(query)}`)
+                                .then(response => response.json())
+                                .then(data => {
+                                    resultsBox.innerHTML = '';
+                                    if (data.results.length > 0) {
+                                        data.results.forEach(item => {
+                                            const a = document.createElement('a');
+                                            a.href = `/question/${item.id}/`;
+                                            a.className = 'list-group-item list-group-item-action d-flex justify-content-between align-items-center';
+                                            a.innerHTML = `
+                                                <span>${item.title}</span>
+                                                <span class="badge bg-primary rounded-pill">${item.rating}</span>
+                                            `;
+                                            resultsBox.appendChild(a);
+                                        });
+                                    } else {
+                                        resultsBox.innerHTML = '<div class="list-group-item text-muted">Ничего не найдено</div>';
+                                    }
+                                    resultsBox.style.display = 'block';
+                                })
+                                .catch(err => console.error(err));
+                        }, 300);
+                    });
+
+                    document.addEventListener('click', function(e) {
+                        if (e.target !== searchInput && e.target !== resultsBox) {
+                            resultsBox.style.display = 'none';
+                        }
+                    });
+                });
+            </script>
             
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
                 {% if user.is_authenticated %}
