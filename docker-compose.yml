@@ -1,10 +1,11 @@
 services:
   app:
+    # image: deadlyparkour/qa_forum:latest
     build:
       context: .
       dockerfile: Dockerfile
-    # image: deadlyparkour/qa_forum:latest
     container_name: django_app
+    command: gunicorn -c gunicorn_config.py ask_pupkin.wsgi:application
     env_file:
       - .env
     networks:
@@ -15,7 +16,20 @@ services:
     volumes:
       - static_volume:/app/staticfiles
       - media_volume:/app/media
-      
+  
+  my_wsgi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: my_wsgi_app
+    command: gunicorn -w 2 -b 0.0.0.0:8081 my_wsgi:application
+    ports:
+      - "8081:8081"
+    volumes:
+      - .:/app
+    networks:
+      - django_network
+
   db:
     image: postgres:16
     container_name: postgres_db
