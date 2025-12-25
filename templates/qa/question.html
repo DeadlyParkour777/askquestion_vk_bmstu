@@ -14,9 +14,9 @@
                 {% endif %}
                 
                 <div class="d-flex justify-content-center align-items-center">
-                    <button class="btn btn-sm btn-outline-success me-2">-</button>
-                    <span class="fs-5">{{ question.rating }}</span>
-                    <button class="btn btn-sm btn-outline-danger ms-2">+</button>
+                    <button class="btn btn-sm btn-outline-secondary vote-question" data-id="{{ question.id }}" data-value="dislike">-</button>
+                    <span class="fs-5 mx-2" id="question-rating-{{ question.id }}">{{ question.rating }}</span>
+                    <button class="btn btn-sm btn-outline-secondary vote-question" data-id="{{ question.id }}" data-value="like">+</button>
                 </div>
             </div>
             <div class="col-10">
@@ -48,14 +48,18 @@
                 {% endif %}
 
                 <div class="d-flex justify-content-center align-items-center">
-                    <button class="btn btn-sm btn-outline-success me-2">-</button>
-                    <span class="fs-5">{{ answer.rating }}</span>
-                    <button class="btn btn-sm btn-outline-danger ms-2">+</button>
+                    <button class="btn btn-sm btn-outline-secondary vote-answer" data-id="{{ answer.id }}" data-value="dislike">-</button>
+                    <span class="fs-5 mx-2" id="answer-rating-{{ answer.id }}">{{ answer.rating }}</span>
+                    <button class="btn btn-sm btn-outline-secondary vote-answer" data-id="{{ answer.id }}" data-value="like">+</button>
                 </div>
                 
                 <div class="form-check mt-2">
-                    <input class="form-check-input" type="checkbox" {% if answer.is_correct %}checked{% endif %} disabled>
-                    <label class="form-check-label">
+                    <input class="form-check-input correct-checkbox" type="checkbox" 
+                           id="correct-{{ answer.id }}" 
+                           data-id="{{ answer.id }}"
+                           {% if answer.is_correct %}checked{% endif %}
+                           {% if request.user.profile != question.author %}disabled{% endif %}>
+                    <label class="form-check-label" for="correct-{{ answer.id }}">
                         Верный
                     </label>
                 </div>
