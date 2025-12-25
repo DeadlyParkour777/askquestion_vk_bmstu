@@ -14,9 +14,9 @@
                 {% endif %}
                 
                 <div class="d-flex justify-content-center align-items-center">
-                    <button class="btn btn-sm btn-outline-secondary vote-question" data-id="{{ question.id }}" data-value="dislike">-</button>
+                    <button class="btn btn-sm btn-outline-danger vote-question" data-id="{{ question.id }}" data-value="dislike">-</button>
                     <span class="fs-5 mx-2" id="question-rating-{{ question.id }}">{{ question.rating }}</span>
-                    <button class="btn btn-sm btn-outline-secondary vote-question" data-id="{{ question.id }}" data-value="like">+</button>
+                    <button class="btn btn-sm btn-outline-success vote-question" data-id="{{ question.id }}" data-value="like">+</button>
                 </div>
             </div>
             <div class="col-10">
@@ -48,9 +48,9 @@
                 {% endif %}
 
                 <div class="d-flex justify-content-center align-items-center">
-                    <button class="btn btn-sm btn-outline-secondary vote-answer" data-id="{{ answer.id }}" data-value="dislike">-</button>
+                    <button class="btn btn-sm btn-outline-danger vote-answer" data-id="{{ answer.id }}" data-value="dislike">-</button>
                     <span class="fs-5 mx-2" id="answer-rating-{{ answer.id }}">{{ answer.rating }}</span>
-                    <button class="btn btn-sm btn-outline-secondary vote-answer" data-id="{{ answer.id }}" data-value="like">+</button>
+                    <button class="btn btn-sm btn-outline-success vote-answer" data-id="{{ answer.id }}" data-value="like">+</button>
                 </div>
                 
                 <div class="form-check mt-2">

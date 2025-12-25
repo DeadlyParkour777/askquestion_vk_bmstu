@@ -23,11 +23,11 @@
                 {% endif %}
 
                 <div class="d-flex justify-content-center align-items-center mt-2">
-                    <button class="btn btn-sm btn-outline-secondary vote-question" data-id="{{ question.id }}" data-value="dislike">-</button>
+                    <button class="btn btn-sm btn-outline-danger vote-question" data-id="{{ question.id }}" data-value="dislike">-</button>
                     
                     <span class="fs-5 mx-2" id="question-rating-{{ question.id }}">{{ question.rating }}</span>
                     
-                    <button class="btn btn-sm btn-outline-secondary vote-question" data-id="{{ question.id }}" data-value="like">+</button>
+                    <button class="btn btn-sm btn-outline-success vote-question" data-id="{{ question.id }}" data-value="like">+</button>
                 </div>
             </div>
             <div class="col-10">
