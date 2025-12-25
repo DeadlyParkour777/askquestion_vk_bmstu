@@ -48,8 +48,12 @@ def login_view(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
-            login(request, form.get_user())
-            return redirect('index')
+            user = authenticate(request, **form.cleaned_data)
+            if user:
+                login(request, user)
+                next_url = request.GET.get('continue', request.GET.get('next', 'index'))
+                return redirect(next_url)
+            form.add_error(None, 'Неверный логин или пароль')
     else:
         form = LoginForm()
 
@@ -69,7 +73,8 @@ def signup_view(request):
 
 def logout_view(request):
     logout(request)
-    return redirect('index')
+    next_url = request.GET.get('next', request.META.get('HTTP_REFERER', 'index'))
+    return redirect(next_url)
 
 @login_required
 def ask_view(request):
