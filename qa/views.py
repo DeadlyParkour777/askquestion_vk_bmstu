@@ -5,7 +5,7 @@ from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 from .models import Question, Answer, Tag, AnswerVote, QuestionVote
 from .utils import paginate
-from .forms import SignupForm, LoginForm, AskForm, SettingsForm
+from .forms import SignupForm, LoginForm, AskForm, SettingsForm, AnswerForm
 from django.db.models import Count
 
 # Create your views here.
@@ -25,10 +25,18 @@ def hot_questions(request):
 def question_info(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
     answers = question.answer_set.order_by('-created_at')
+    form = AnswerForm()
+
+    if request.method == 'POST' and request.user.is_authenticated:
+        form = AnswerForm(request.POST)
+        if form.is_valid():
+            answer = form.save(request.user, question)
+            return redirect(f'/question/{question.id}/#answer-{answer.id}')
 
     context = {
         'question': question,
         'answers': answers,
+        'form': form,
     }
 
     return render(request, 'qa/question.html', context)
