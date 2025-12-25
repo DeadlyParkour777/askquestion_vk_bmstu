@@ -35,3 +35,19 @@ class Answer(models.Model):
 
     def __str__(self):
         return f'Ответ от {self.author} на {self.question.title}'
+
+class QuestionVote(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    value = models.SmallIntegerField(default=0)
+
+    class Meta:
+        unique_together = ('user', 'question')
+
+class AnswerVote(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    answer = models.ForeignKey(Answer, on_delete=models.CASCADE)
+    value = models.SmallIntegerField(default=0)
+
+    class Meta:
+        unique_together = ('user', 'answer')
