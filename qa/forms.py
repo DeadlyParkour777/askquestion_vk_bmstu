@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from qa.models import Profile
 from django.contrib.auth import authenticate
-from qa.models import Question, Tag
+from qa.models import Question, Tag, Answer
 
 class SignupForm(forms.Form):
     username = forms.CharField(
@@ -44,7 +44,11 @@ class SignupForm(forms.Form):
             password=self.cleaned_data['password'],
         )
 
-        Profile.objects.create(user=user)
+        profile = Profile.objects.create(user=user)
+        if self.cleaned_data.get('avatar'):
+            profile.avatar = self.cleaned_data['avatar']
+            profile.save()
+
         return user
 
 class LoginForm(forms.Form):
@@ -74,6 +78,17 @@ class LoginForm(forms.Form):
     
     def get_user(self):
         return self.user_cache
+
+class AnswerForm(forms.Form):
+    text = forms.CharField(required=True, label="Ваш ответ", widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 5}))
+
+    def save(self, user, question):
+        answer = Answer.objects.create(
+            text=self.cleaned_data['text'],
+            author=user.profile,
+            question=question
+        )
+        return answer
 
 class AskForm(forms.Form):
     title = forms.CharField(
@@ -122,3 +137,30 @@ class AskForm(forms.Form):
         question.tags.set(tag_objects)
         
         return question
+
+class SettingsForm(forms.Form):
+    username = forms.CharField(max_length=100, required=True, label="Логин", widget=forms.TextInput(attrs={'class': 'form-control'}))
+    email = forms.EmailField(required=True, label="Email", widget=forms.EmailInput(attrs={'class': 'form-control'}))
+    avatar = forms.ImageField(required=False, label="Аватар", widget=forms.FileInput(attrs={'class': 'form-control'}))
+
+    def __init__(self, user, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user = user
+
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        # Разрешаем оставить свой же ник, но запрещаем занимать чужой
+        if User.objects.filter(username=username).exclude(id=self.user.id).exists():
+            raise forms.ValidationError('Этот логин уже занят')
+        return username
+
+    def save(self):
+        self.user.username = self.cleaned_data['username']
+        self.user.email = self.cleaned_data['email']
+        self.user.save()
+        
+        profile = self.user.profile
+        if self.cleaned_data.get('avatar'):
+            profile.avatar = self.cleaned_data['avatar']
+            profile.save()
+        return self.user

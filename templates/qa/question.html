@@ -7,7 +7,12 @@
     <div class="card-body">
         <div class="row">
             <div class="col-2 text-center">
-                <img src="https://placehold.co/80" alt="avatar" class="rounded-circle mb-2">
+                {% if question.author.avatar %}
+                    <img src="{{ question.author.avatar.url }}" alt="avatar" class="rounded-circle mb-2" width="80" height="80" style="object-fit: cover;">
+                {% else %}
+                    <img src="https://placehold.co/80" alt="avatar" class="rounded-circle mb-2">
+                {% endif %}
+                
                 <div class="d-flex justify-content-center align-items-center">
                     <button class="btn btn-sm btn-outline-success me-2">-</button>
                     <span class="fs-5">{{ question.rating }}</span>
@@ -20,7 +25,7 @@
                 <div>
                     <span>Теги:</span>
                     {% for tag in question.tags.all %}
-                    <a href="#" class="badge bg-secondary text-decoration-none">{{ tag }}</a>
+                        <a href="{% url 'tag' tag.name %}" class="badge bg-secondary text-decoration-none">{{ tag.name }}</a>
                     {% endfor %}
                 </div>
             </div>
@@ -30,27 +35,34 @@
 
 <hr>
 
-<h3>Ответы ({{ answers|length }})</h3>
+<h3>Ответы ({{ answers.count }})</h3>
 {% for answer in answers %}
-<div class="card mb-3">
+<div class="card mb-3" id="answer-{{ answer.id }}">
     <div class="card-body">
         <div class="row">
             <div class="col-2 text-center">
-                <img src="https://placehold.co/80" alt="avatar" class="rounded-circle mb-2">
+                {% if answer.author.avatar %}
+                    <img src="{{ answer.author.avatar.url }}" alt="avatar" class="rounded-circle mb-2" width="80" height="80" style="object-fit: cover;">
+                {% else %}
+                    <img src="https://placehold.co/80" alt="avatar" class="rounded-circle mb-2">
+                {% endif %}
+
                 <div class="d-flex justify-content-center align-items-center">
                     <button class="btn btn-sm btn-outline-success me-2">-</button>
                     <span class="fs-5">{{ answer.rating }}</span>
                     <button class="btn btn-sm btn-outline-danger ms-2">+</button>
                 </div>
+                
                 <div class="form-check mt-2">
-                    <input class="form-check-input" type="checkbox" value="" id="correctAnswer{{ forloop.counter }}">
-                    <label class="form-check-label" for="correctAnswer{{ forloop.counter }}">
+                    <input class="form-check-input" type="checkbox" {% if answer.is_correct %}checked{% endif %} disabled>
+                    <label class="form-check-label">
                         Верный
                     </label>
                 </div>
             </div>
             <div class="col-10">
                 <p class="card-text">{{ answer.text }}</p>
+                <small class="text-muted">Автор: {{ answer.author.user.username }}</small>
             </div>
         </div>
     </div>
@@ -60,10 +72,27 @@
 <hr>
 
 <h4>Ваш ответ</h4>
-<form class="mb-3">
-    <div class="mb-3">
-        <textarea class="form-control" rows="5" placeholder="Введите текст вашего ответа"></textarea>
+{% if user.is_authenticated %}
+    <form class="mb-3" method="post" action="{% url 'question' question.id %}">
+        {% csrf_token %}
+        
+        {% for error in form.non_field_errors %}
+            <div class="alert alert-danger">{{ error }}</div>
+        {% endfor %}
+
+        <div class="mb-3">
+            {{ form.text }}
+            {% for error in form.text.errors %}
+                <div class="alert alert-danger mt-2">{{ error }}</div>
+            {% endfor %}
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Ответить</button>
+    </form>
+{% else %}
+    <div class="alert alert-warning">
+        <a href="{% url 'login' %}?next={{ request.path }}">Войдите</a> или <a href="{% url 'signup' %}">зарегистрируйтесь</a>, чтобы оставить ответ.
     </div>
-    <button type="submit" class="btn btn-primary">Ответить</button>
-</form>
+{% endif %}
+
 {% endblock %}

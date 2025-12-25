@@ -14,13 +14,17 @@
                             {{ user.username }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="#">Настройки профиля</a></li>
+                            <li><a class="dropdown-item" href="{% url 'profile_edit' %}">Настройки профиля</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{% url 'logout' %}">Выйти</a></li>
                         </ul>
                     </li>
                     <li class="nav-item ms-2">
-                        <img src="https://placehold.co/40" class="rounded-circle" width="40" height="40">
+                        {% if user.profile.avatar %}
+                            <img src="{{ user.profile.avatar.url }}" class="rounded-circle" width="40" height="40" style="object-fit: cover;">
+                        {% else %}
+                            <img src="https://placehold.co/40" class="rounded-circle" width="40" height="40">
+                        {% endif %}
                     </li>
 
                 {% else %}

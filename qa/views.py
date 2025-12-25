@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from .models import Question, Answer, Tag
 from .utils import paginate
-from .forms import SignupForm, LoginForm, AskForm
+from .forms import SignupForm, LoginForm, AskForm, SettingsForm
 from django.db.models import Count
 
 # Create your views here.
@@ -81,3 +81,19 @@ def ask_view(request):
     else:
         form = AskForm()
     return render(request, 'qa/ask.html', {'form': form})
+
+@login_required
+def profile_edit(request):
+    if request.method == 'POST':
+        form = SettingsForm(request.user, request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('profile_edit')
+    else:
+        initial_data = {
+            'username': request.user.username,
+            'email': request.user.email,
+        }
+        form = SettingsForm(request.user, initial=initial_data)
+
+    return render(request, 'qa/settings.html', {'form': form})
