@@ -16,7 +16,7 @@
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                             <li><a class="dropdown-item" href="{% url 'profile_edit' %}">Настройки профиля</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{% url 'logout' %}">Выйти</a></li>
+                            <li><a class="dropdown-item" href="{% url 'logout' %}?next={{ request.path }}">Выйти</a></li>
                         </ul>
                     </li>
                     <li class="nav-item ms-2">
