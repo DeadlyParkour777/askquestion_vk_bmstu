@@ -20,6 +20,3 @@ urlpatterns = [
     path('vote/answer/', views.vote_answer, name='vote_answer'),
     path('correct/', views.mark_correct, name='mark_correct'),
 ]
-
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
