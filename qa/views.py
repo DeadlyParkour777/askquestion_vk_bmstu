@@ -4,9 +4,10 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 from .models import Question, Answer, Tag, AnswerVote, QuestionVote
-from .utils import paginate
+from .utils import paginate, get_centrifugo_token, publish_to_centrifugo
 from .forms import SignupForm, LoginForm, AskForm, SettingsForm, AnswerForm
 from django.db.models import Count
+from django.conf import settings
 
 # Create your views here.
 
@@ -187,3 +188,41 @@ def mark_correct(request):
     answer.save()
     
     return JsonResponse({'status': 'ok'})
+
+def question_info(request, question_id):
+    question = get_object_or_404(Question, pk=question_id)
+    answers = question.answer_set.order_by('-created_at')
+    form = AnswerForm()
+
+    if request.method == 'POST' and request.user.is_authenticated:
+        form = AnswerForm(request.POST)
+        if form.is_valid():
+            answer = form.save(request.user, question)
+            
+            channel_name = f"question_{question_id}"
+            data = {
+                "author": answer.author.user.username,
+                "text": answer.text,
+                "avatar_url": answer.author.avatar.url if answer.author.avatar else "https://placehold.co/80",
+                "rating": answer.rating,
+                "id": answer.id
+            }
+            publish_to_centrifugo(channel_name, data)
+            
+            return redirect(f'/question/{question.id}/#answer-{answer.id}')
+
+    cent_token = ""
+    if request.user.is_authenticated:
+        cent_token = get_centrifugo_token(request.user.id)
+    else:
+        cent_token = get_centrifugo_token("")
+
+    context = {
+        'question': question,
+        'answers': answers,
+        'form': form,
+        'cent_token': cent_token,
+        'cent_ws_url': settings.CENTRIFUGO_WS_URL,
+    }
+
+    return render(request, 'qa/question.html', context)

@@ -147,3 +147,18 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8080',
     'http://127.0.0.1:8080',
 ]
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://redis:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+
+CENTRIFUGO_API_URL = "http://centrifugo:8000/api"
+CENTRIFUGO_API_KEY = "api_key_for_backend_communication"
+CENTRIFUGO_HMAC_SECRET = "secret_key_for_jwt_token_generation"
+CENTRIFUGO_WS_URL = "ws://localhost:8001/connection/websocket" 

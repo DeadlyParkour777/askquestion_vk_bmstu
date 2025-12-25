@@ -35,43 +35,46 @@
 
 <hr>
 
-<h3>Ответы ({{ answers.count }})</h3>
-{% for answer in answers %}
-<div class="card mb-3" id="answer-{{ answer.id }}">
-    <div class="card-body">
-        <div class="row">
-            <div class="col-2 text-center">
-                {% if answer.author.avatar %}
-                    <img src="{{ answer.author.avatar.url }}" alt="avatar" class="rounded-circle mb-2" width="80" height="80" style="object-fit: cover;">
-                {% else %}
-                    <img src="https://placehold.co/80" alt="avatar" class="rounded-circle mb-2">
-                {% endif %}
+<h3>Ответы (<span id="answers-counter">{{ answers.count }}</span>)</h3>
 
-                <div class="d-flex justify-content-center align-items-center">
-                    <button class="btn btn-sm btn-outline-danger vote-answer" data-id="{{ answer.id }}" data-value="dislike">-</button>
-                    <span class="fs-5 mx-2" id="answer-rating-{{ answer.id }}">{{ answer.rating }}</span>
-                    <button class="btn btn-sm btn-outline-success vote-answer" data-id="{{ answer.id }}" data-value="like">+</button>
+<div id="answers-container">
+    {% for answer in answers %}
+    <div class="card mb-3" id="answer-{{ answer.id }}">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-2 text-center">
+                    {% if answer.author.avatar %}
+                        <img src="{{ answer.author.avatar.url }}" alt="avatar" class="rounded-circle mb-2" width="80" height="80" style="object-fit: cover;">
+                    {% else %}
+                        <img src="https://placehold.co/80" alt="avatar" class="rounded-circle mb-2">
+                    {% endif %}
+
+                    <div class="d-flex justify-content-center align-items-center">
+                        <button class="btn btn-sm btn-outline-danger vote-answer" data-id="{{ answer.id }}" data-value="dislike">-</button>
+                        <span class="fs-5 mx-2" id="answer-rating-{{ answer.id }}">{{ answer.rating }}</span>
+                        <button class="btn btn-sm btn-outline-success vote-answer" data-id="{{ answer.id }}" data-value="like">+</button>
+                    </div>
+                    
+                    <div class="form-check mt-2">
+                        <input class="form-check-input correct-checkbox" type="checkbox" 
+                               id="correct-{{ answer.id }}" 
+                               data-id="{{ answer.id }}"
+                               {% if answer.is_correct %}checked{% endif %}
+                               {% if request.user.profile != question.author %}disabled{% endif %}>
+                        <label class="form-check-label" for="correct-{{ answer.id }}">
+                            Верный
+                        </label>
+                    </div>
                 </div>
-                
-                <div class="form-check mt-2">
-                    <input class="form-check-input correct-checkbox" type="checkbox" 
-                           id="correct-{{ answer.id }}" 
-                           data-id="{{ answer.id }}"
-                           {% if answer.is_correct %}checked{% endif %}
-                           {% if request.user.profile != question.author %}disabled{% endif %}>
-                    <label class="form-check-label" for="correct-{{ answer.id }}">
-                        Верный
-                    </label>
+                <div class="col-10">
+                    <p class="card-text">{{ answer.text }}</p>
+                    <small class="text-muted">Автор: {{ answer.author.user.username }}</small>
                 </div>
-            </div>
-            <div class="col-10">
-                <p class="card-text">{{ answer.text }}</p>
-                <small class="text-muted">Автор: {{ answer.author.user.username }}</small>
             </div>
         </div>
     </div>
+    {% endfor %}
 </div>
-{% endfor %}
 
 <hr>
 
@@ -98,5 +101,62 @@
         <a href="{% url 'login' %}?next={{ request.path }}">Войдите</a> или <a href="{% url 'signup' %}">зарегистрируйтесь</a>, чтобы оставить ответ.
     </div>
 {% endif %}
+
+<script src="https://unpkg.com/centrifuge@5.0.1/dist/centrifuge.js"></script>
+<script>
+    const centrifuge = new Centrifuge("{{ cent_ws_url }}", {
+        token: "{{ cent_token }}"
+    });
+
+    centrifuge.on('connecting', function (ctx) {
+        console.log(`connecting: ${ctx.code}, ${ctx.reason}`);
+    }).on('connected', function (ctx) {
+        console.log(`connected over ${ctx.transport}`);
+    }).on('disconnected', function (ctx) {
+        console.log(`disconnected: ${ctx.code}, ${ctx.reason}`);
+    }).connect();
+
+    const sub = centrifuge.newSubscription("question_{{ question.id }}");
+
+    sub.on('publication', function (ctx) {
+        const data = ctx.data;
+        
+        if (document.getElementById(`answer-${data.id}`)) {
+            return;
+        }
+
+        const newAnswerHtml = `
+        <div class="card mb-3 animate__animated animate__fadeIn" id="answer-${data.id}" style="border-left: 5px solid #198754;">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-2 text-center">
+                        <img src="${data.avatar_url}" alt="avatar" class="rounded-circle mb-2" width="80" height="80" style="object-fit: cover;">
+                        
+                        <div class="d-flex justify-content-center align-items-center">
+                            <button class="btn btn-sm btn-outline-danger" disabled>-</button>
+                            <span class="fs-5 mx-2">0</span>
+                            <button class="btn btn-sm btn-outline-success" disabled>+</button>
+                        </div>
+                        
+                        <div class="form-check mt-2">
+                             <input class="form-check-input" type="checkbox" disabled>
+                             <label class="form-check-label">Верный</label>
+                        </div>
+                    </div>
+                    <div class="col-10">
+                        <p class="card-text">${data.text}</p>
+                        <small class="text-muted">Автор: ${data.author} (Только что)</small>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+        
+        const container = document.getElementById('answers-container');
+        container.insertAdjacentHTML('afterbegin', newAnswerHtml);
+        const counter = document.getElementById('answers-counter');
+        counter.innerText = parseInt(counter.innerText) + 1;
+
+    }).subscribe();
+</script>
 
 {% endblock %}
