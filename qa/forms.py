@@ -21,6 +21,11 @@ class SignupForm(forms.Form):
         required=True, label="Повторите пароль",
         widget=forms.PasswordInput(attrs={'class': 'form-control'})
     )
+
+    avatar = forms.ImageField(
+        required=False, label="Аватар",
+        widget=forms.FileInput(attrs={'class': 'form-control'})
+    )
     
     def clean_username(self):
         username = self.cleaned_data['username']

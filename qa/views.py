@@ -70,7 +70,8 @@ def login_view(request):
 
 def signup_view(request):
     if request.method == 'POST':
-        form = SignupForm(request.POST)
+        form = SignupForm(request.POST, request.FILES)
+        
         if form.is_valid():
             user = form.save()
             login(request, user)
