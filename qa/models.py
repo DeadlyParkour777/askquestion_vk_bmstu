@@ -23,6 +23,8 @@ class Question(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     tags = models.ManyToManyField(Tag)
 
+    rating = models.IntegerField(default=0)
+
     def __str__(self):
         return self.title
 
@@ -32,6 +34,8 @@ class Answer(models.Model):
     text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     is_correct = models.BooleanField(default=False)
+
+    rating = models.IntegerField(default=0)
 
     def __str__(self):
         return f'Ответ от {self.author} на {self.question.title}'
