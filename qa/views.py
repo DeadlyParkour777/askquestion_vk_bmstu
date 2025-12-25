@@ -6,7 +6,7 @@ from django.http import JsonResponse
 from .models import Question, Answer, Tag, AnswerVote, QuestionVote
 from .utils import paginate, get_centrifugo_token, publish_to_centrifugo
 from .forms import SignupForm, LoginForm, AskForm, SettingsForm, AnswerForm
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.conf import settings
 
 # Create your views here.
@@ -22,25 +22,6 @@ def hot_questions(request):
     page_obj = paginate(questions, request, per_page=10)
     context = {'questions': page_obj}
     return render(request, 'qa/index.html', context)    
-
-def question_info(request, question_id):
-    question = get_object_or_404(Question, pk=question_id)
-    answers = question.answer_set.order_by('-created_at')
-    form = AnswerForm()
-
-    if request.method == 'POST' and request.user.is_authenticated:
-        form = AnswerForm(request.POST)
-        if form.is_valid():
-            answer = form.save(request.user, question)
-            return redirect(f'/question/{question.id}/#answer-{answer.id}')
-
-    context = {
-        'question': question,
-        'answers': answers,
-        'form': form,
-    }
-
-    return render(request, 'qa/question.html', context)
 
 def question_by_tag(request, tag_name):
     tag = get_object_or_404(Tag, name=tag_name)
@@ -226,3 +207,21 @@ def question_info(request, question_id):
     }
 
     return render(request, 'qa/question.html', context)
+
+def search_questions(request):
+    query = request.GET.get('q', '')
+    results = []
+    
+    if len(query) >= 3:
+        qs = Question.objects.filter(
+            Q(title__icontains=query) | Q(text__icontains=query)
+        ).order_by('-rating')[:10]
+        
+        for q in qs:
+            results.append({
+                'id': q.id,
+                'title': q.title,
+                'rating': q.rating
+            })
+            
+    return JsonResponse({'results': results})
