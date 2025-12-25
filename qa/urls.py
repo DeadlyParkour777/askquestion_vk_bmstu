@@ -15,6 +15,10 @@ urlpatterns = [
 
     path('ask/', views.ask_view, name='ask'),
     path('profile/edit/', views.profile_edit, name='profile_edit'),
+
+    path('vote/question/', views.vote_question, name='vote_question'),
+    path('vote/answer/', views.vote_answer, name='vote_answer'),
+    path('correct/', views.mark_correct, name='mark_correct'),
 ]
 
 if settings.DEBUG:
